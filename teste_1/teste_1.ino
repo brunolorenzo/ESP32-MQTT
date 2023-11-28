@@ -10,6 +10,7 @@
 #include "DHT.h"
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <time.h>
 
 // SENSOR
 //#define DHTPIN ALTERAR
@@ -24,6 +25,10 @@ const char *topic = "teste/teste1";
 const char *mqtt_username = "brunocod";
 const char *mqtt_password = "Br12kl345";
 const int mqtt_port = 1883;
+
+// FUSO-HORÁRIO
+long fuso_horario = -3;
+byte horario_verao = 1;
 
 
 WiFiClient espClient;
@@ -58,6 +63,9 @@ void setup() {
     // Publica e Inscreve-se
     client.publish(topic, "Olá eu sou a ESP32.");
     client.subscribe(topic);
+
+    configTime(3600 * fuso_horario, horario_verao * 3600, "time.nist.gov", "0.pool.ntp.org", "1.pool.ntp.org");
+
 }
 
 void callback(char *topic, byte *payload, unsigned int length) {
@@ -73,6 +81,18 @@ void callback(char *topic, byte *payload, unsigned int length) {
 int i = 0;
 
 void loop() {
+
+    struct tm tmstruct ;
+
+    tmstruct.tm_year = 0;
+    getLocalTime(&tmstruct);
+
+    String date = (String(tmstruct.tm_mday)+ "/" + String(( tmstruct.tm_mon) + 1) + "/" + ((tmstruct.tm_year) -100));
+  
+    String hour = (String(tmstruct.tm_hour) + ":" + String(tmstruct.tm_min) + ":" + String(tmstruct.tm_sec));
+
+    Serial.println("Date: " + date + " - Time: " + hour);
+
 
     i += 1;
     client.loop();
