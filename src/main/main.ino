@@ -13,7 +13,8 @@
 #include <time.h>
 
 // SENSOR
-//#define DHTPIN ALTERAR
+//#define DHTPIN 4     // Pino digital conectado ao sensor
+//#define DHTTYPE DHT11
 
 // REDE WIFI
 const char *ssid = "Brunorca2002";
@@ -21,7 +22,7 @@ const char *password = "br167901";
 
 // MQTT Broker
 const char *mqtt_broker = "broker.hivemq.com";
-const char *topic = "teste/teste1";
+const char *topic = "comdado/trabalho2";
 const char *mqtt_username = "brunocod";
 const char *mqtt_password = "Br12kl345";
 const int mqtt_port = 1883;
@@ -34,8 +35,13 @@ byte horario_verao = 1;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+// INICILIAZAR DHT
+//DHT dht(DHTPIN, DHTTYPE);
+
 void setup() {
     Serial.begin(115200);
+
+    //dht.begin();
     
     //CONECTAR A REDE WIFI:
     WiFi.begin(ssid, password);
@@ -78,9 +84,15 @@ void callback(char *topic, byte *payload, unsigned int length) {
     Serial.println();
     Serial.println("-----------------------");
 }
-int i = 0;
+
+// VARIAVEL TESTE
+uint16_t i = 0;
 
 void loop() {
+    //Leitura da Umidade
+    //float h = dht.readHumidity();
+    //Leitura da Temperatura em ºC (default) 
+    //float t = dht.readTemperature();
 
     struct tm tmstruct ;
 
@@ -93,9 +105,12 @@ void loop() {
 
     Serial.println("Date: " + date + " - Time: " + hour);
 
-
+    // VARIAVEL TESTE
     i += 1;
     client.loop();
-    delay(1000);
-    client.publish(topic, (String(i).c_str()));
+    // A CADA 1 MINUTO
+    delay(60000); 
+    
+    String payload = date + " - " + hour +" " + "Temperatura: " + String(i) + "ºC";
+    client.publish(topic, payload.c_str());
 }

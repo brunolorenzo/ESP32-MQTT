@@ -1,0 +1,11 @@
+https://www.hivemq.com/demos/websocket-client/ 
+https://www.mqtt-dashboard.com
+
+host: broker.hivemq.com
+port: 8884
+
+função para gráfico (Node-red):
+	int val = ;
+	var parts = msg.payload.split(" ");
+	msg.payload = parseFloat(parts[val]);
+	return msg; 
